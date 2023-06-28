@@ -9,7 +9,7 @@ import numpy as np
 rdf = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
 dbpedia = Namespace("http://dbpedia.org/ontology/")
-
+   
 # Create an RDF graph and load the data
 g = Graph()
 g.parse("Nobel2012-2022-dataChanged.ttl", format="turtle")

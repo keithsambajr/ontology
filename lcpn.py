@@ -11,7 +11,7 @@ g.parse("Nobel2012-2022-dataChanged.ttl", format="turtle")
 
 # Prepare lists for labels and features
 X = []
-y = []
+y = []  
 
 # Iterate over the RDF graph and extract labels and features
 for s, p, o in g.triples((None, None, None)):
