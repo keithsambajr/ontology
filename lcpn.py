@@ -1,9 +1,9 @@
-import numpy as np
 from rdflib import Graph, Namespace
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
 
 # Load the data
 g = Graph()
@@ -12,7 +12,7 @@ g.parse("Nobel2012-2022-dataChanged.ttl", format="turtle")
 # Prepare lists for labels and features
 X = []
 y = []  
-
+ 
 # Iterate over the RDF graph and extract labels and features
 for s, p, o in g.triples((None, None, None)):
     X.append(str(s))
