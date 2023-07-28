@@ -5,6 +5,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from para_tuning import tune_logistic_regression, tune_svm
 
 # Load the data
 g = Graph()
@@ -29,9 +30,16 @@ vectorizer = TfidfVectorizer()
 lr_classifiers = {}
 svm_classifiers = {}
 
+
 # Transform X_train and X_test using the same vectorizer
 X_train_feature = vectorizer.fit_transform(X_train)
 X_test_feature = vectorizer.transform(X_test)
+
+# Perform hyperparameter tuning for Logistic Regression
+best_lr_model, best_lr_params = tune_logistic_regression(X_train_feature, y_train)
+
+# Perform hyperparameter tuning for SVM
+best_svm_model, best_svm_params = tune_svm(X_train_feature, y_train)
 
 
 # Iterate over unique parent nodes in the training set
@@ -56,6 +64,8 @@ for parent_node in unique_parent_nodes:
     # Create a new SVM classifier for each parent node
     svm_classifiers[parent_node] = SVC()
     svm_classifiers[parent_node].fit(parent_examples_feature, parent_labels)
+    
+    
 
 # Predict labels for the testing set and print accuracy and prediction for each classifier
 print("Logistic Regression Classifier:")
