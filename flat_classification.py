@@ -1,16 +1,17 @@
 from rdflib import Graph, Namespace
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from para_tuning import tune_logistic_regression, tune_svm
 
 # Define the RDF namespaces
 rdf = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
 dbpedia = Namespace("http://dbpedia.org/ontology/")
-   
+
 # Create an RDF graph and load the data
 g = Graph()
 g.parse("Nobel2012-2022-dataChanged.ttl", format="turtle")
@@ -36,57 +37,25 @@ X_feature = vectorizer.fit_transform(X)
 
 # Model selection and training
 X_train, X_test, y_train, y_test = train_test_split(X_feature, Y, test_size=0.20, random_state=0)
-classifier = LogisticRegression()
-classifier.fit(X_train, y_train)
 
-# Model evaluation
-y_pred = classifier.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
+# Logistic Regression with Hyperparameter Tuning
+best_lr_model, best_lr_params = tune_logistic_regression(X_train, y_train)
+y_pred_lr = best_lr_model.predict(X_test)
+accuracy_lr = accuracy_score(y_test, y_pred_lr)
+print("Logistic Regression Accuracy:", accuracy_lr * 100)
 
-print("Accuracy:", accuracy*100)
-
-# Prediction
+# Prediction using Logistic Regression
 new_data = ['new instance to classify']
 new_data_feature = vectorizer.transform(new_data)
-prediction = classifier.predict(new_data_feature)
+prediction_lr = best_lr_model.predict(new_data_feature)
+print("Logistic Regression Prediction:", prediction_lr)
 
-print("Prediction:", prediction)
+# SVM with Hyperparameter Tuning
+best_svm_model, best_svm_params = tune_svm(X_train, y_train)
+y_pred_svm = best_svm_model.predict(X_test)
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print("SVM Accuracy:", accuracy_svm * 100)
 
-
-
-
-#svm classifier
-# Model selection and training
-X_train, X_test, y_train, y_test = train_test_split(X_feature, Y, test_size=0.20, random_state=0)
-classifier = SVC()
-classifier.fit(X_train, y_train)
-
-# Model evaluation
-y_pred = classifier.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-
-print("Accuracy:", accuracy*100)
-
-# Prediction
-new_data = ['new instance to classify']
-new_data_feature = vectorizer.transform(new_data)
-prediction = classifier.predict(new_data_feature)
-
-print("Prediction:", prediction)    
-
-
-
-
-
-
-
-
-
-
-# C (inverse of regularization strength): The default value is 1.0. A smaller value of C corresponds to stronger regularization.
-
-# penalty: The default value is 'l2', which indicates L2 regularization. Other options include 'l1' for L1 regularization and 'none' for no regularization.
-
-# solver: The default solver depends on the problem size. For smaller problems, the default solver is 'liblinear', and for larger problems, the default solver is 'lbfgs'. Other solver options include 'newton-cg', 'sag', and 'saga'.
-
-# max_iter: The default value is 100, which is the maximum number of iterations for the solver to converge.
+# Prediction using SVM
+prediction_svm = best_svm_model.predict(new_data_feature)
+print("SVM Prediction:", prediction_svm)
